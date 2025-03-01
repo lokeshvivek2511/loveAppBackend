@@ -3,44 +3,51 @@ const serverless = require("serverless-http");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const path = require("path");
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ✅ CORS Setup
+const allowedOrigins = [
+  "https://mylovestory.netlify.app"
+];
+
 const corsOptions = {
-  origin: "https://mylovestory.netlify.app",  // ✅ Use your frontend's Netlify URL
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
 };
+
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
-app.use(cors({ origin: "*", credentials: true }));
-
+// ✅ Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// MongoDB Connection (Ensure MONGODB_URI is set in Netlify Environment Variables)
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.error("MongoDB connection error:", error));
+// ✅ Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((error) => console.error("❌ MongoDB connection error:", error));
 
-// Import routes
+// ✅ Routes
 const authRoutes = require("../../routes/auth");
 const calendarRoutes = require("../../routes/calendar");
 const galleryRoutes = require("../../routes/gallery");
 const quoteRoutes = require("../../routes/quotes");
 
-// Use routes
 app.use("/api/auth", authRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/quotes", quoteRoutes);
 
-// Export for Netlify Functions
+// ✅ Export for Netlify Functions
 module.exports.handler = serverless(app);
