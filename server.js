@@ -4,10 +4,10 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
-const authRoutes = require("./routes/auth");
-const galleryRoutes = require("./routes/gallery");
-const quotesRoutes = require("./routes/quotes");
-const calendarRoutes = require("./routes/calendar");
+const authRoutes = require(path.join(__dirname, "../../routes/auth"));
+const galleryRoutes =require(path.join(__dirname, "../../routes/gallery"));
+const quotesRoutes = require(path.join(__dirname, "../../routes/quotes"));
+const calendarRoutes = require(path.join(__dirname, "../../routes/calendar"));
 
 dotenv.config();
 
