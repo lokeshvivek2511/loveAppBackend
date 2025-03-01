@@ -1,14 +1,18 @@
 const express = require("express");
 const serverless = require("serverless-http");
 
-const app = express();
+const path = require("path");
 
-// Middleware & Routes
-app.use(express.json());
-app.use("/api/auth", require("../routes/auth"));
-app.use("/api/calendar", require("../routes/calendar"));
-app.use("/api/gallery", require("../routes/gallery"));
-app.use("/api/quotes", require("../routes/quotes"));
+// Use __dirname to properly locate the routes
+const authRoutes = require(path.join(__dirname, "../../routes/auth"));
+const calendarRoutes = require(path.join(__dirname, "../../routes/calendar"));
+const galleryRoutes = require(path.join(__dirname, "../../routes/gallery"));
+const quoteRoutes = require(path.join(__dirname, "../../routes/quotes"));
 
-// Export as Netlify function
+// Use them in Express
+app.use("/api/auth", authRoutes);
+app.use("/api/calendar", calendarRoutes);
+app.use("/api/gallery", galleryRoutes);
+app.use("/api/quotes", quoteRoutes);
+
 module.exports.handler = serverless(app);
