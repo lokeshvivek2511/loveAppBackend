@@ -1,47 +1,66 @@
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import authRoutes from './routes/auth.js';
-import galleryRoutes from './routes/gallery.js';
-import quotesRoutes from './routes/quotes.js';
-import calendarRoutes from './routes/calendar.js';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const path = require("path");
+
+const authRoutes = require("./routes/auth");
+const galleryRoutes = require("./routes/gallery");
+const quotesRoutes = require("./routes/quotes");
+const calendarRoutes = require("./routes/calendar");
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// ✅ CORS Setup
+const allowedOrigins = [
+  "https://mylovestory.netlify.app",
+  "https://anotherfrontend.netlify.app",
+];
 
-// MongoDB Connection
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((error) => console.error('MongoDB connection error:', error));
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((error) => console.error("❌ MongoDB connection error:", error));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/quotes', quotesRoutes);
-app.use('/api/calendar', calendarRoutes);
+// ✅ API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/gallery", galleryRoutes);
+app.use("/api/quotes", quotesRoutes);
+app.use("/api/calendar", calendarRoutes);
 
-// For production with Netlify
-if (process.env.NODE_ENV === 'production') {
-  const buildPath = join(__dirname, '../project/dist');
+// ✅ Handle React Frontend (For Netlify)
+if (process.env.NODE_ENV === "production") {
+  const buildPath = path.join(__dirname, "../project/dist");
   app.use(express.static(buildPath));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(join(buildPath, 'index.html'));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
   });
 }
 
+// ✅ Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
