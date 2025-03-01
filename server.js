@@ -4,21 +4,18 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
-const authRoutes = require(path.join(__dirname, "../../routes/auth"));
-const galleryRoutes =require(path.join(__dirname, "../../routes/gallery"));
-const quotesRoutes = require(path.join(__dirname, "../../routes/quotes"));
-const calendarRoutes = require(path.join(__dirname, "../../routes/calendar"));
-
 dotenv.config();
+
+const authRoutes = require("./routes/auth");
+const galleryRoutes = require("./routes/gallery");
+const quotesRoutes = require("./routes/quotes");
+const calendarRoutes = require("./routes/calendar");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ✅ CORS Setup
-const allowedOrigins = [
-  "https://mylovestory.netlify.app",
-  "https://anotherfrontend.netlify.app",
-];
+const allowedOrigins = ["https://mylovestory.netlify.app"];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -28,14 +25,10 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -50,7 +43,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/quotes", quotesRoutes);
 app.use("/api/calendar", calendarRoutes);
 
-// ✅ Handle React Frontend (For Netlify)
+// ✅ Handle Frontend for Production
 if (process.env.NODE_ENV === "production") {
   const buildPath = path.join(__dirname, "../project/dist");
   app.use(express.static(buildPath));
@@ -60,7 +53,6 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });

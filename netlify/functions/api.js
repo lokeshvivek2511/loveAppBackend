@@ -9,9 +9,7 @@ dotenv.config();
 const app = express();
 
 // ✅ CORS Setup
-const allowedOrigins = [
-  "https://mylovestory.netlify.app"
-];
+const allowedOrigins = ["https://mylovestory.netlify.app"];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -21,15 +19,10 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-
-// ✅ Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -38,7 +31,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((error) => console.error("❌ MongoDB connection error:", error));
 
-// ✅ Routes
+// ✅ Import Routes Using CommonJS
 const authRoutes = require("../../routes/auth");
 const calendarRoutes = require("../../routes/calendar");
 const galleryRoutes = require("../../routes/gallery");

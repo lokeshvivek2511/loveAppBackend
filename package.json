@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-     "build": "netlify-lambda build netlify/functions",
+    "build": "netlify-lambda build netlify/functions",
     "serve": "netlify dev"
   },
   "dependencies": {
