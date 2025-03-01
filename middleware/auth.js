@@ -1,27 +1,27 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+
     if (!token) {
-      throw new Error('No token provided');
+      return res.status(401).json({ message: "No token provided" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ _id: decoded.userId });
 
     if (!user) {
-      throw new Error('User not found');
+      return res.status(401).json({ message: "User not found" });
     }
 
     req.user = user;
     req.token = token;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Please authenticate' });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 
-export default auth;
+module.exports = auth;
