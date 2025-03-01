@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: ["https://your-frontend.netlify.app"], // Replace with your frontend URL
+  origin: "https://mylovestory.netlify.app",  // ✅ Use your frontend's Netlify URL
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
